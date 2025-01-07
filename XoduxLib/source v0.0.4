@@ -1,0 +1,64 @@
+local UILibrary = {}
+
+-- Utility function to create a new UI instance
+local function createUIElement(className, properties, parent)
+    local element = Instance.new(className)
+    for property, value in pairs(properties) do
+        element[property] = value
+    end
+    if parent then
+        element.Parent = parent
+    end
+    return element
+end
+
+-- Create a ScreenGui
+function UILibrary.CreateScreenGui(parent, properties)
+    local defaultProperties = {
+        Name = "XoduxUI",
+        Enabled = true,
+        ResetOnSpawn = false,
+    }
+    
+    -- Merge defaults with custom properties
+    for key, value in pairs(properties or {}) do
+        defaultProperties[key] = value
+    end
+    
+    -- Default parent to PlayerGui if not provided
+    parent = parent or game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    return createUIElement("ScreenGui", defaultProperties, parent)
+end
+
+-- Create a Frame
+function UILibrary.CreateFrame(parent, properties)
+    local defaultProperties = {
+        BackgroundColor3 = Color3.fromRGB(233, 233, 233),
+        BackgroundTransparency = 0,
+        BorderColor3 = Color3.fromRGB(0, 0, 0),
+        BorderSizePixel = 2,
+        Size = UDim2.new(0.5, 0, 0.5, 0),
+        Position = UDim2.new(0.5, -150, 0.5, -100),
+    }
+    
+    -- Merge defaults with custom properties
+    for key, value in pairs(properties or {}) do
+        defaultProperties[key] = value
+    end
+    
+    -- Ensure parent exists
+    if not parent then
+        error("Parent for Frame not specified or is invalid!")
+    end
+    
+    return createUIElement("Frame", defaultProperties, parent)
+end
+
+-- Create a Button
+function UILibrary.CreateButton(parent, properties)
+    local defaultProperties = {
+        Text = "Button",
+        Size = UDim2.new(0, 200, 0, 50),
+        Position = UDim2.new(0.5, -100, 0.5, -25),
+        BackgroundColor3 = Color3.fromRGB(0, 170, 255),
+        TextColor3 = Col
