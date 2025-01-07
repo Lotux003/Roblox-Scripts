@@ -1,0 +1,218 @@
+local UILibrary = {}
+
+-- Utility function to create a new UI instance
+local function createUIElement(className, properties, parent)
+    local element = Instance.new(className)
+    for property, value in pairs(properties or {}) do
+        element[property] = value
+    end
+    if parent then
+        element.Parent = parent
+    end
+    return element
+end
+
+-- ScreenGui
+function UILibrary.CreateScreenGui(parent, properties)
+    local defaultProperties = {
+        Name = "XoduxUI",
+        Enabled = true,
+        ResetOnSpawn = false,
+    }
+    for key, value in pairs(properties or {}) do
+        defaultProperties[key] = value
+    end
+    parent = parent or game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    return createUIElement("ScreenGui", defaultProperties, parent)
+end
+
+-- Frame
+function UILibrary.CreateFrame(parent, properties)
+    local defaultProperties = {
+        BackgroundColor3 = Color3.fromRGB(233, 233, 233),
+        BackgroundTransparency = 0,
+        BorderColor3 = Color3.fromRGB(0, 0, 0),
+        BorderSizePixel = 2,
+        Size = UDim2.new(0.4, 0, 0.7, 0),
+        Position = UDim2.new(0.5, -150, 0.5, -100),
+    }
+    for key, value in pairs(properties or {}) do
+        defaultProperties[key] = value
+    end
+    if not parent then error("Parent for Frame not specified or is invalid!") end
+    return createUIElement("Frame", defaultProperties, parent)
+end
+
+-- TextLabel
+function UILibrary.CreateTextLabel(parent, properties)
+    local defaultProperties = {
+        Text = "Text for Label",
+        TextColor3 = Color3.fromRGB(50, 50, 50),
+        TextTransparency = 0,
+        TextScaled = false,
+        Font = Enum.Font.Arial,
+        TextSize = 12,
+        BackgroundColor3 = Color3.fromRGB(233, 233, 233),
+        Size = UDim2.new(0.4, 0, 0.1, 0),
+        Position = UDim2.new(0.3, 0, 0.1, 0),
+    }
+    for key, value in pairs(properties or {}) do
+        defaultProperties[key] = value
+    end
+    if not parent then error("Parent for TextLabel not specified or is invalid!") end
+    return createUIElement("TextLabel", defaultProperties, parent)
+end
+
+-- Button
+function UILibrary.CreateButton(parent, properties)
+    local defaultProperties = {
+        Text = "Text for Button",
+        TextColor3 = Color3.fromRGB(50, 50, 50),
+        TextTransparency = 0,
+        Font = Enum.Font.Arial,
+        TextSize = 12,
+        BackgroundColor3 = Color3.fromRGB(233, 233, 233),
+        Size = UDim2.new(0.4, 0, 0.1, 0),
+        Position = UDim2.new(0.3, 0, 0.3, 0),
+        AutoButtonColor = true,
+    }
+    for key, value in pairs(properties or {}) do
+        defaultProperties[key] = value
+    end
+    if not parent then error("Parent for TextButton not specified or is invalid!") end
+    return createUIElement("TextButton", defaultProperties, parent)
+end
+
+-- UIListLayout
+function UILibrary.CreateUIListLayout(parent, properties)
+    local defaultProperties = {
+        FillDirection = Enum.FillDirection.Vertical,
+        Padding = UDim.new(0, 5),
+        SortOrder = Enum.SortOrder.LayoutOrder,
+    }
+    for key, value in pairs(properties or {}) do
+        defaultProperties[key] = value
+    end
+    if not parent then error("Parent for UIListLayout not specified or is invalid!") end
+    return createUIElement("UIListLayout", defaultProperties, parent)
+end
+
+-- UIGridLayout
+function UILibrary.CreateUIGridLayout(parent, properties)
+    local defaultProperties = {
+        CellSize = UDim2.new(0, 100, 0, 100),
+        CellPadding = UDim2.new(0, 5, 0, 5),
+        FillDirection = Enum.FillDirection.Horizontal,
+        SortOrder = Enum.SortOrder.LayoutOrder,
+    }
+    for key, value in pairs(properties or {}) do
+        defaultProperties[key] = value
+    end
+    if not parent then error("Parent for UIGridLayout not specified or is invalid!") end
+    return createUIElement("UIGridLayout", defaultProperties, parent)
+end
+
+-- UIPadding
+function UILibrary.CreateUIPadding(parent, properties)
+    local defaultProperties = {
+        PaddingTop = UDim.new(0, 10),
+        PaddingBottom = UDim.new(0, 10),
+        PaddingLeft = UDim.new(0, 10),
+        PaddingRight = UDim.new(0, 10),
+    }
+    for key, value in pairs(properties or {}) do
+        defaultProperties[key] = value
+    end
+    if not parent then error("Parent for UIPadding not specified or is invalid!") end
+    return createUIElement("UIPadding", defaultProperties, parent)
+end
+
+-- Draggable Frame
+function UILibrary.CreateDraggableFrame(parent, properties)
+    local defaultProperties = {
+        BackgroundColor3 = Color3.fromRGB(233, 233, 233),
+        BackgroundTransparency = 0,
+        BorderColor3 = Color3.fromRGB(0, 0, 0),
+        BorderSizePixel = 2,
+        Size = UDim2.new(0.4, 0, 0.4, 0),
+        Position = UDim2.new(0.3, 0, 0.3, 0),
+    }
+
+    -- Merge defaults with custom properties
+    for key, value in pairs(properties or {}) do
+        defaultProperties[key] = value
+    end
+
+    if not parent then
+        error("Parent for Draggable Frame not specified or is invalid!")
+    end
+
+    local frame = createUIElement("Frame", defaultProperties, parent)
+
+    -- Make the Frame Draggable
+    local isDragging = false
+    local dragStart, startPos
+
+    -- Create a function to update the frame's position
+    local function update(input)
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+
+    -- Input events for dragging
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            isDragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    isDragging = false
+                end
+            end)
+        end
+    end)
+
+    frame.InputChanged:Connect(function(input)
+        if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            update(input)
+        end
+    end)
+
+    return frame
+end
+
+function Library:MakeDraggable(Instance, Cutoff)
+    Instance.Active = true;
+
+    Instance.InputBegan:Connect(function(Input)
+        if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+            local ObjPos = Vector2.new(
+                Mouse.X - Instance.AbsolutePosition.X,
+                Mouse.Y - Instance.AbsolutePosition.Y
+            );
+
+            if ObjPos.Y > (Cutoff or 40) then
+                return;
+            end;
+
+            while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
+                Instance.Position = UDim2.new(
+                    0,
+                    Mouse.X - ObjPos.X + (Instance.Size.X.Offset * Instance.AnchorPoint.X),
+                    0,
+                    Mouse.Y - ObjPos.Y + (Instance.Size.Y.Offset * Instance.AnchorPoint.Y)
+                );
+
+                RenderStepped:Wait();
+            end;
+        end;
+    end)
+end;
+
+return UILibrary
