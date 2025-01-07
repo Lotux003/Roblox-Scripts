@@ -1,49 +1,56 @@
 local UILibrary = {}
 
--- Store default properties for UI elements
-UILibrary.Defaults = {
-    Button = {
-        Size = UDim2.new(0, 200, 0, 50),
-        Position = UDim2.new(0.5, -100, 0.5, -25),
-        Text = "Button",
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        TextColor3 = Color3.fromRGB(0, 0, 0),
-    },
-    Label = {
-        Size = UDim2.new(0, 200, 0, 50),
-        Position = UDim2.new(0.5, -100, 0.5, -25),
-        Text = "Label",
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        TextColor3 = Color3.fromRGB(0, 0, 0),
-    },
-}
-
--- Function to create UI elements
-local function createInstance(className, properties, parent)
-    local instance = Instance.new(className)
+-- Utility function to create a new UI instance
+local function createUIElement(className, properties, parent)
+    local element = Instance.new(className)
     for property, value in pairs(properties) do
-        instance[property] = value
+        element[property] = value
     end
-    instance.Parent = parent
-    return instance
+    if parent then
+        element.Parent = parent
+    end
+    return element
 end
 
--- Button creation function
+-- Create a ScreenGui
+function UILibrary.CreateScreenGui(parent)
+    return createUIElement("ScreenGui", {}, parent or game.Players.LocalPlayer:WaitForChild("PlayerGui"))
+end
+
+-- Create a Button
 function UILibrary.CreateButton(properties, parent)
-    local props = table.clone(UILibrary.Defaults.Button)
+    local defaultProperties = {
+        Text = "Button",
+        Size = UDim2.new(0, 200, 0, 50),
+        Position = UDim2.new(0.5, -100, 0.5, -25),
+        BackgroundColor3 = Color3.fromRGB(0, 170, 255),
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        Font = Enum.Font.SourceSans,
+        TextSize = 24,
+    }
+    -- Merge defaults with custom properties
     for key, value in pairs(properties) do
-        props[key] = value
+        defaultProperties[key] = value
     end
-    return createInstance("TextButton", props, parent)
+    return createUIElement("TextButton", defaultProperties, parent)
 end
 
--- Label creation function
+-- Create a Label
 function UILibrary.CreateLabel(properties, parent)
-    local props = table.clone(UILibrary.Defaults.Label)
+    local defaultProperties = {
+        Text = "Label",
+        Size = UDim2.new(0, 200, 0, 50),
+        Position = UDim2.new(0.5, -100, 0.4, -25),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        TextColor3 = Color3.fromRGB(0, 0, 0),
+        Font = Enum.Font.SourceSans,
+        TextSize = 24,
+    }
+    -- Merge defaults with custom properties
     for key, value in pairs(properties) do
-        props[key] = value
+        defaultProperties[key] = value
     end
-    return createInstance("TextLabel", props, parent)
+    return createUIElement("TextLabel", defaultProperties, parent)
 end
 
 return UILibrary
